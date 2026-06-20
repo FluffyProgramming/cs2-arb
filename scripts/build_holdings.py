@@ -77,6 +77,7 @@ def main() -> None:
             "paint_seed": it.get("paint_seed"),
             "is_stattrak": bool(it.get("is_stattrak")),
             "is_souvenir": bool(it.get("is_souvenir")),
+            "rarity": it.get("rarity", 0) or 0,
             # cost basis: CSFloat purchase price if we bought it there, else any
             # value you entered manually before (preserved across rebuilds)
             "float_value": round(it["float_value"], 6),

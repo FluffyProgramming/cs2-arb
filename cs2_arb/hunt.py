@@ -48,6 +48,7 @@ def _candidate_to_holding(l: Listing) -> Holding:
         float_value=l.float_value,
         is_stattrak=l.is_stattrak,
         is_souvenir=l.is_souvenir,
+        rarity=l.rarity,
     )
 
 

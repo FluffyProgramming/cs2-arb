@@ -34,8 +34,10 @@ CSFloat market listings  ────────┘         (fair value)       
 - **No inbox flood.** A persisted per-listing cooldown means each deal alerts at most
   once per window; quiet cycles send nothing.
 - **Nice emails.** Styled HTML digest with a plain-text fallback.
-- **Local dashboard.** Self-contained `dashboard.html` shows portfolio fair value,
-  P&L, and open signals.
+- **Local dashboard.** Self-contained `dashboard.html` ("tactical terminal" UI)
+  shows flip opportunities, portfolio fair value, P&L, and signals. Reads the same
+  `state.json` / `hunt_state.json`; falls back to a demo dataset if none is present.
+  (Fonts load from Google Fonts at runtime — self-host them for fully offline use.)
 - **Runs anywhere.** A Raspberry Pi / VPS via cron, or free via GitHub Actions.
 - **Stdlib-only runtime.** No third-party packages to run; `pytest` only for tests.
 
@@ -121,7 +123,8 @@ cs2_arb/
 scripts/             build_holdings · run_once · run_hunt · selftest
 demo/                fixtures + offline demo
 tests/               pytest suite
-dashboard.html       read-only dashboard
+dashboard.html       read-only dashboard (tactical-terminal UI)
+design/              editable design source + handoff notes
 ```
 
 ```bash

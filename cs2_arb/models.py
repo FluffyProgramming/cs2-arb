@@ -33,6 +33,7 @@ class Listing:
     price_cents: int                 # buy_now price (or current bid)
     is_stattrak: bool = False
     is_souvenir: bool = False
+    rarity: int = 0                  # CSFloat rarity (1=Consumer … 6=Covert, 7=Contraband)
     type: str = "buy_now"            # "buy_now" | "auction"
     wear_name: str = ""
     stickers: tuple[Sticker, ...] = ()
@@ -64,6 +65,7 @@ class Holding:
     float_value: float
     is_stattrak: bool = False
     is_souvenir: bool = False
+    rarity: int = 0
     paint_seed: Optional[int] = None
     quantity: int = 1
     cost_basis_cents: Optional[int] = None   # what you paid

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<template id="__bundler_thumbnail"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#0a0f12"/><circle cx="50" cy="50" r="20" fill="none" stroke="#2d8fef" stroke-width="3"/><line x1="50" y1="22" x2="50" y2="78" stroke="#2d8fef" stroke-width="3"/><line x1="22" y1="50" x2="78" y2="50" stroke="#2d8fef" stroke-width="3"/><rect x="46" y="46" width="8" height="8" fill="#e4ae39"/></svg></template>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Saira:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+@keyframes cs2pulse {0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.78)}}
+html,body{margin:0;padding:0;background:#070a0b}
+*{box-sizing:border-box}
+a{text-decoration:none}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:#0a0e10}
+::-webkit-scrollbar-thumb{background:#1d2c32;border:3px solid #0a0e10}
+::-webkit-scrollbar-thumb:hover{background:#2d8fef}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;padding:30px 30px 48px;font-family:'Saira',system-ui,sans-serif;color:#e6eef0;background:radial-gradient(135% 90% at 50% -12%,#13242c 0%,#0a0f12 44%,#070a0b 100%)" style-before="content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:44px 44px">
+  <div style="position:relative;z-index:1;max-width:1340px;margin:0 auto">
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="position:relative;width:48px;height:48px;flex:none;background:linear-gradient(140deg,#2d8fef,#10355c);clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(45,143,239,.35)">
+          <div style="width:22px;height:22px;border:2px solid #eaf2f4;border-radius:50%;position:relative" style-before="content:'';position:absolute;left:50%;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:#eaf2f4" style-after="content:'';position:absolute;top:50%;left:-5px;right:-5px;height:2px;margin-top:-1px;background:#eaf2f4"></div>
+        </div>
+        <div>
+          <div style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:30px;letter-spacing:2.5px;text-transform:uppercase;color:#eef5f7;line-height:1">CS2 <span style="color:#2d8fef">ARBITRAGE</span> TERMINAL</div>
+          <div style="display:flex;align-items:center;gap:16px;margin-top:9px;font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:#7d8f96">
+            <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#4ee39a;box-shadow:0 0 11px #4ee39a;animation:cs2pulse 1.5s infinite"></span><span style="color:#9fe6bf">LIVE FEED</span></span>
+            <span style="color:#3a4a51">/</span>
+            <span>SOURCE · <span style="color:#bccace">{{ sourceLabel }}</span></span>
+            <span style="color:#3a4a51">/</span>
+            <span>SYNC <span style="color:#bccace">{{ updatedRel }}</span></span>
+          </div>
+        </div>
+      </div>
+      <button onClick="{{ onReload }}" style="font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:1.8px;text-transform:uppercase;color:#dbe7ea;background:linear-gradient(180deg,#16262d,#0d171b);border:1px solid #28454f;padding:13px 22px;cursor:pointer;transition:all .14s;clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);display:inline-flex;align-items:center;gap:10px" style-hover="border-color:#2d8fef;color:#9fd0ff;box-shadow:0 0 22px rgba(45,143,239,.22)"><span style="color:#2d8fef;font-size:16px">↻</span> RUN CYCLE</button>
+    </div>
+
+    <div style="height:3px;margin:20px 0 22px;background:repeating-linear-gradient(135deg,#e4ae39 0 14px,transparent 14px 28px);opacity:.32"></div>
+
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+        <div style="position:relative;background:linear-gradient(180deg,#0f191e,#0b1316);border:1px solid #1c2c33;border-top:2px solid {{ k.accent }};padding:15px 17px 18px;clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%)">
+          <div style="font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:#6f8189">{{ k.label }}</div>
+          <div style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:32px;letter-spacing:.5px;color:#eef5f7;margin-top:7px;font-variant-numeric:tabular-nums">{{ k.value }}</div>
+          <div style="font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;margin-top:6px;color:{{ k.subColor }}">{{ k.sub }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.62fr 1fr;gap:18px;margin-top:26px;align-items:start">
+
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin:0 0 15px">
+          <span style="width:9px;height:9px;background:#2d8fef;box-shadow:0 0 11px #2d8fef;flex:none"></span>
+          <h2 style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2.2px;text-transform:uppercase;color:#cdd9dd;margin:0">Flip Opportunities</h2>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5f7178;letter-spacing:.5px">[{{ flipsCount }}]</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#23343b,transparent)"></div>
+        </div>
+
+        <sc-for list="{{ flips }}" as="f" hint-placeholder-count="4">
+          <div style="position:relative;background:linear-gradient(100deg,{{ f.washColor }},#0d1519 40%);border:1px solid #1b2a31;border-left:3px solid {{ f.rarityColor }};padding:14px 17px;margin-bottom:12px;transition:transform .12s,border-color .12s;clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%)" style-hover="border-color:#33505b;transform:translateY(-1px)">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                <span style="width:9px;height:9px;border-radius:50%;background:{{ f.rarityColor }};box-shadow:0 0 9px {{ f.rarityColor }};flex:none"></span>
+                <span style="font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:17px;letter-spacing:.4px;color:#eef5f7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.item }}</span>
+                <sc-if value="{{ f.wear }}" hint-placeholder-val="{{ true }}"><span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#8aa0a8;border:1px solid #25363d;padding:2px 7px;flex:none">{{ f.wear }}</span></sc-if>
+              </div>
+              <span style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;padding:3px 9px;flex:none;color:{{ f.sevColor }};background:{{ f.sevBg }};border:1px solid {{ f.sevColor }}">{{ f.sev }}</span>
+            </div>
+
+            <sc-if value="{{ f.rich }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:18px;margin:13px 0 11px">
+                <div style="display:flex;flex-direction:column">
+                  <span style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1;color:{{ f.marginColor }};font-variant-numeric:tabular-nums">{{ f.marginStr }}</span>
+                  <span style="font-size:9.5px;letter-spacing:1.5px;color:#6f8189;text-transform:uppercase;margin-top:4px">Net Margin</span>
+                </div>
+                <div style="height:36px;width:1px;background:#22323a"></div>
+                <div style="display:flex;align-items:center;gap:14px;font-variant-numeric:tabular-nums">
+                  <div><div style="font-size:9.5px;letter-spacing:1.2px;color:#6f8189;text-transform:uppercase">Buy</div><div style="font-size:19px;color:#e6eef0;font-weight:600">{{ f.buyStr }}</div></div>
+                  <span style="color:{{ f.rarityColor }};font-size:18px">→</span>
+                  <div><div style="font-size:9.5px;letter-spacing:1.2px;color:#6f8189;text-transform:uppercase">Fair</div><div style="font-size:19px;color:#9fd6a8;font-weight:600">{{ f.fairStr }}</div></div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ f.plain }}"><div style="margin:11px 0;font-size:13px;line-height:1.55;color:#c6d2d6">{{ f.msg }}</div></sc-if>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid #18262c;padding-top:10px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3px;color:#6f8189">{{ f.metaStr }}</span>
+              <a href="{{ f.url }}" target="_blank" style="font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:#2d8fef;transition:color .12s" style-hover="color:#7fc4ff">View Listing →</a>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin:0 0 15px">
+          <span style="width:9px;height:9px;background:#eb4b4b;box-shadow:0 0 11px #eb4b4b;flex:none"></span>
+          <h2 style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2.2px;text-transform:uppercase;color:#cdd9dd;margin:0">Signals</h2>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5f7178;letter-spacing:.5px">[{{ signalsCount }}]</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#23343b,transparent)"></div>
+        </div>
+
+        <sc-for list="{{ signals }}" as="s" hint-placeholder-count="3">
+          <div style="background:linear-gradient(180deg,#0f191e,#0b1316);border:1px solid #1b2a31;border-left:3px solid {{ s.accent }};padding:13px 15px;margin-bottom:11px;clip-path:polygon(0 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%)">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
+              <span style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:{{ s.accent }};background:{{ s.accentBg }};padding:3px 8px">{{ s.kindLabel }}</span>
+              <span style="font-size:10px;letter-spacing:1.2px;color:#5f7178;text-transform:uppercase">{{ s.sev }}</span>
+            </div>
+            <div style="font-size:13px;line-height:1.55;color:#c6d2d6">{{ s.message }}</div>
+            <sc-if value="{{ s.hasUrl }}"><a href="{{ s.url }}" target="_blank" style="display:inline-block;margin-top:9px;font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:#2d8fef" style-hover="color:#7fc4ff">View Listing →</a></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:30px">
+      <div style="display:flex;align-items:center;gap:12px;margin:0 0 15px">
+        <span style="width:9px;height:9px;background:#e4ae39;box-shadow:0 0 11px #e4ae39;flex:none"></span>
+        <h2 style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2.2px;text-transform:uppercase;color:#cdd9dd;margin:0">Portfolio</h2>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5f7178;letter-spacing:.5px">[{{ portfolioCount }}]</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,#23343b,transparent)"></div>
+      </div>
+
+      <div style="background:linear-gradient(180deg,#0e171b,#0a1215);border:1px solid #1b2a31;overflow:hidden;clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%)">
+        <table style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums">
+          <thead>
+            <tr style="background:#0b1418">
+              <th style="text-align:left;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 16px;border-bottom:1px solid #1b2a31;white-space:nowrap">Item</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 12px;border-bottom:1px solid #1b2a31;white-space:nowrap">Fair</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 12px;border-bottom:1px solid #1b2a31;white-space:nowrap">p25</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 12px;border-bottom:1px solid #1b2a31;white-space:nowrap">Comps</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 12px;border-bottom:1px solid #1b2a31;white-space:nowrap">Float Rank</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 12px;border-bottom:1px solid #1b2a31;white-space:nowrap">Cost</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 12px;border-bottom:1px solid #1b2a31;white-space:nowrap">Reserve</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 12px;border-bottom:1px solid #1b2a31;white-space:nowrap">Unrealised</th>
+              <th style="text-align:right;font-family:'Saira Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6f8189;font-weight:600;padding:13px 16px;border-bottom:1px solid #1b2a31;white-space:nowrap">Cheapest Live</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ portfolio }}" as="p" hint-placeholder-count="7">
+              <tr style="transition:background .1s" style-hover="background:#101c21">
+                <td style="text-align:left;padding:12px 16px;border-bottom:1px solid #131e23">
+                  <div style="display:flex;align-items:center;gap:11px">
+                    <span style="width:8px;height:8px;border-radius:50%;background:{{ p.rarityColor }};box-shadow:0 0 8px {{ p.rarityColor }};flex:none"></span>
+                    <div>
+                      <div style="font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:14.5px;color:#e8f0f2;letter-spacing:.3px">{{ p.item }}</div>
+                      <div style="font-size:11px;color:#6f8189;letter-spacing:.4px;margin-top:1px">{{ p.sub }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="text-align:right;padding:12px 12px;border-bottom:1px solid #131e23;font-size:13px;color:#dbe5e8;font-weight:600">{{ p.fair }}</td>
+                <td style="text-align:right;padding:12px 12px;border-bottom:1px solid #131e23;font-size:13px;color:#7d8f96">{{ p.p25 }}</td>
+                <td style="text-align:right;padding:12px 12px;border-bottom:1px solid #131e23;font-size:13px;color:#9fb0b6">{{ p.comps }} <span style="font-size:10px;color:#52646b">±{{ p.band }}</span></td>
+                <td style="text-align:right;padding:12px 12px;border-bottom:1px solid #131e23">
+                  <div style="display:flex;align-items:center;gap:9px;justify-content:flex-end">
+                    <div style="width:52px;height:5px;background:#16242a;position:relative;overflow:hidden;flex:none">
+                      <div style="position:absolute;left:0;top:0;bottom:0;width:{{ p.rankPct }};background:{{ p.rankColor }};box-shadow:0 0 8px {{ p.rankColor }}"></div>
+                    </div>
+                    <span style="font-size:12px;color:#9fb0b6;min-width:32px;text-align:right">{{ p.rankStr }}</span>
+                  </div>
+                </td>
+                <td style="text-align:right;padding:12px 12px;border-bottom:1px solid #131e23;font-size:13px;color:#7d8f96">{{ p.cost }}</td>
+                <td style="text-align:right;padding:12px 12px;border-bottom:1px solid #131e23;font-size:13px;color:#7d8f96">{{ p.reserve }}</td>
+                <td style="text-align:right;padding:12px 12px;border-bottom:1px solid #131e23;font-size:13.5px;font-weight:600;color:{{ p.unrealColor }}">{{ p.unreal }}</td>
+                <td style="text-align:right;padding:12px 16px;border-bottom:1px solid #131e23;font-size:13px"><a href="{{ p.cheapestUrl }}" target="_blank" style="color:#2d8fef;font-weight:600" style-hover="color:#7fc4ff">{{ p.cheapest }}</a></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:9px;font-size:11px;color:#52646b;letter-spacing:.4px">Float rank — % of comparable listings with a lower float. Lower is rarer.</div>
+    </div>
+
+    <div style="margin-top:26px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:11px;letter-spacing:.5px;color:#5a6b71">
+      <span style="font-family:'Saira Condensed',sans-serif;font-weight:700;letter-spacing:1.5px;color:#0a0f12;background:#e4ae39;padding:3px 9px">DATA</span>
+      <span>Reads <code style="font-family:'JetBrains Mono',monospace;color:#e4ae39;background:#121b1f;padding:1px 6px;font-size:11px">state.json</code> + <code style="font-family:'JetBrains Mono',monospace;color:#e4ae39;background:#121b1f;padding:1px 6px;font-size:11px">hunt_state.json</code> · run <code style="font-family:'JetBrains Mono',monospace;color:#e4ae39;background:#121b1f;padding:1px 6px;font-size:11px">python -m scripts.run_once</code>, then serve with <code style="font-family:'JetBrains Mono',monospace;color:#e4ae39;background:#121b1f;padding:1px 6px;font-size:11px">python -m http.server 8000</code></span>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:1000},&quot;rarityTiers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;#2d8fef&quot;,&quot;options&quot;:[&quot;#2d8fef&quot;,&quot;#4fd2e6&quot;,&quot;#e4ae39&quot;,&quot;#8847ff&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.generatedAt = Date.now();
+    this.state = { now: Date.now(), sourceLabel: 'DEMO', raw: null };
+  }
+  componentDidMount(){
+    this.timer = setInterval(() => this.setState({ now: Date.now() }), 1000);
+    this.fetchLive();
+  }
+  componentWillUnmount(){ if (this.timer) clearInterval(this.timer); }
+
+  fmt(c){ return '$' + (c/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  accent(){ return this.props.accentColor || '#2d8fef'; }
+  rar(name){
+    if (this.props.rarityTiers === false) return this.accent();
+    const m = { consumer:'#b0c3d9', industrial:'#5e98d9', milspec:'#4b69ff', restricted:'#8847ff', classified:'#d32ce6', covert:'#eb4b4b', knife:'#e4ae39', contraband:'#cf9b3f' };
+    return m[name] || '#7d8f96';
+  }
+  rgba(hex,a){ const n = parseInt(hex.slice(1),16); return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')'; }
+
+  async fetchLive(){
+    try {
+      const res = await fetch('state.json?t=' + Date.now());
+      if (!res.ok) throw new Error('no state');
+      const s = await res.json();
+      let flips = [];
+      try { const hr = await fetch('hunt_state.json?t=' + Date.now()); if (hr.ok) flips = (await hr.json()).flips || []; } catch(e) {}
+      this.generatedAt = s.generated_at ? new Date(s.generated_at).getTime() : Date.now();
+      this.setState({ sourceLabel: 'CSFLOAT', raw: { s, flips } });
+    } catch(e) { /* keep demo */ }
+  }
+
+  demo(){
+    const F = this.fmt.bind(this), W = this.rgba.bind(this), R = this.rar.bind(this);
+    const flips = [
+      { name:'AK-47 | Bloodsport', wear:'FT', rar:'classified', buy:2400, fair:3200, float:0.2215, meta:'DEF 7 · PAINT 282 · SEED 700', sev:'HIGH', url:'#' },
+      { name:'AWP | Asiimov', wear:'FT', rar:'covert', buy:7950, fair:9200, float:0.2410, meta:'DEF 9 · PAINT 279 · SEED 142', sev:'MED', url:'#' },
+      { name:'Glock-18 | Fade', wear:'FN', rar:'restricted', buy:32800, fair:35200, float:0.0120, meta:'DEF 4 · PAINT 38 · 90% FADE', sev:'MED', url:'#' },
+      { name:'Karambit | Doppler', wear:'FT', rar:'knife', buy:68500, fair:71200, float:0.1830, meta:'DEF 507 · PAINT 417 · PHASE 2', sev:'LOW', url:'#' },
+    ].map(f => {
+      const m = (f.fair - f.buy) / f.buy, rc = R(f.rar);
+      const sc = f.sev === 'HIGH' ? '#eb4b4b' : f.sev === 'MED' ? '#e4ae39' : '#7d8f96';
+      return { item:f.name, wear:f.wear, rarityColor:rc, washColor:W(rc,0.10), sev:f.sev, sevColor:sc, sevBg:W(sc,0.13),
+        rich:true, plain:false, msg:'', marginStr:'+'+(m*100).toFixed(1)+'%', marginColor:'#4ee39a',
+        buyStr:F(f.buy), fairStr:F(f.fair), metaStr:'FLOAT '+f.float.toFixed(4)+' · '+f.meta, url:f.url };
+    });
+    const signals = [
+      { kind:'UNDERVALUED', sev:'HIGH', accent:'#eb4b4b', msg:'AK-47 | Bloodsport (FT) listed at $24.00 — 25% under fair value of $32.00. Float 0.2215 sits inside the comp band.' },
+      { kind:'RESERVE BREACH', sev:'MED', accent:'#e4ae39', msg:'Karambit | Doppler (FT) dropped to $685.00, below your $700.00 reserve line.' },
+      { kind:'UNDERVALUED', sev:'MED', accent:'#8847ff', msg:'AWP | Asiimov (FT) at $79.50 sits under your p25 line of $87.00 across 9 comps.' },
+    ].map(s => ({ kindLabel:s.kind, sev:s.sev, accent:s.accent, accentBg:W(s.accent,0.13), message:s.msg, url:'#', hasUrl:true }));
+    const port = [
+      { name:'AK-47 | Bloodsport', wear:'Field-Tested', float:0.2215, qty:1, rar:'classified', fair:3200, p25:3050, comps:6, band:0.004, rank:38, cost:2700, reserve:3000, unreal:500 },
+      { name:'Karambit | Doppler', wear:'Field-Tested', float:0.1830, qty:1, rar:'knife', fair:71200, p25:69000, comps:5, band:0.006, rank:22, cost:64000, reserve:70000, unreal:7200 },
+      { name:'AWP | Asiimov', wear:'Field-Tested', float:0.2410, qty:1, rar:'covert', fair:9200, p25:8700, comps:9, band:0.003, rank:51, cost:8100, reserve:8500, unreal:1100 },
+      { name:'Desert Eagle | Blaze', wear:'Factory New', float:0.0120, qty:2, rar:'restricted', fair:4350, p25:4100, comps:7, band:0.002, rank:12, cost:3900, reserve:4200, unreal:450 },
+      { name:'M4A4 | Howl', wear:'Field-Tested', float:0.2050, qty:1, rar:'contraband', fair:165000, p25:159000, comps:3, band:0.004, rank:44, cost:150000, reserve:160000, unreal:15000 },
+      { name:'USP-S | Kill Confirmed', wear:'Field-Tested', float:0.2600, qty:1, rar:'covert', fair:5400, p25:5100, comps:8, band:0.003, rank:60, cost:5600, reserve:5300, unreal:-200 },
+      { name:'AK-47 | Redline', wear:'Field-Tested', float:0.2200, qty:3, rar:'classified', fair:1500, p25:1400, comps:11, band:0.003, rank:47, cost:1650, reserve:1500, unreal:-150 },
+    ].map(p => {
+      const rc = R(p.rar), rankColor = p.rank < 30 ? '#4ee39a' : p.rank < 55 ? '#e4ae39' : '#6f8189';
+      return { item:p.name, sub:p.wear+' · float '+p.float.toFixed(4)+(p.qty>1?' · x'+p.qty:''), rarityColor:rc,
+        fair:F(p.fair), p25:F(p.p25), comps:String(p.comps), band:p.band.toFixed(3),
+        rankPct:p.rank+'%', rankStr:p.rank+'%', rankColor, cost:F(p.cost), reserve:F(p.reserve),
+        unreal:(p.unreal>=0?'+':'−')+F(Math.abs(p.unreal)), unrealColor:p.unreal>=0?'#4ee39a':'#eb4b4b',
+        cheapest:F(p.fair-80), cheapestUrl:'#' };
+    });
+    const pv = 3200+71200+9200+4350*2+165000+5400+1500*3;
+    const un = 500+7200+1100+450*2+15000-200-150*3;
+    const kpis = [
+      { label:'Portfolio Value', value:F(pv), sub:'7 Holdings', subColor:'#6f8189', accent:this.accent() },
+      { label:'Unrealised P&L', value:'+'+F(un), sub:'+9.9% All-Time', subColor:'#4ee39a', accent:'#4ee39a' },
+      { label:'Open Flips', value:'4', sub:'1 High Margin', subColor:'#e4ae39', accent:'#e4ae39' },
+      { label:'Live Signals', value:'3', sub:'1 Undervalued', subColor:'#eb4b4b', accent:'#eb4b4b' },
+      { label:'Best Margin', value:'+33.3%', sub:'AK · Bloodsport', subColor:'#d32ce6', accent:'#d32ce6' },
+    ];
+    return { kpis, flips, signals, portfolio:port, flipsCount:flips.length, signalsCount:signals.length, portfolioCount:port.length };
+  }
+
+  mapLive(s, flips){
+    const W = this.rgba.bind(this), A = this.accent();
+    const port = (s.portfolio || []).map(r => {
+      const rank = Math.round((r.float_rank_pct || 0) * 100);
+      return { item:r.label, sub:(r.wear||'')+' · float '+r.float+(r.quantity>1?' · x'+r.quantity:''), rarityColor:A,
+        fair:r.fair_value || '—', p25:r.p25 || '—', comps:String(r.n_comps != null ? r.n_comps : '—'), band:String(r.band_width != null ? r.band_width : ''),
+        rankPct:rank+'%', rankStr:r.float_rank_pct == null ? '—' : rank+'%', rankColor:rank<30?'#4ee39a':rank<55?'#e4ae39':'#6f8189',
+        cost:r.cost_basis || '—', reserve:r.reserve || '—', unreal:r.unrealised || '—',
+        unrealColor:r.unrealised_cents == null ? '#7d8f96' : (r.unrealised_cents >= 0 ? '#4ee39a' : '#eb4b4b'),
+        cheapest:r.cheapest_listing || '—', cheapestUrl:r.cheapest_url || '#' };
+    });
+    const sig = (s.signals || []).map(x => {
+      const sev = (x.severity || 'med').toUpperCase(), ac = sev === 'HIGH' ? '#eb4b4b' : '#e4ae39';
+      return { kindLabel:(x.kind || 'signal').replace(/_/g,' ').toUpperCase(), sev, accent:ac, accentBg:W(ac,0.13), message:x.message || '', url:x.url || '', hasUrl:!!x.url };
+    });
+    const fl = (flips || []).map(x => {
+      const sev = (x.severity || 'med').toUpperCase(), sc = sev === 'HIGH' ? '#eb4b4b' : sev === 'MED' ? '#e4ae39' : '#7d8f96', rc = '#e4ae39';
+      return { item:'Flip Opportunity', wear:'', rarityColor:rc, washColor:W(rc,0.08), sev, sevColor:sc, sevBg:W(sc,0.13),
+        rich:false, plain:true, msg:x.message || '', marginStr:'', marginColor:'#4ee39a', buyStr:'', fairStr:'', metaStr:'', url:x.url || '' };
+    });
+    const t = s.totals || {};
+    const kpis = [
+      { label:'Portfolio Value', value:t.fair_value || '—', sub:(t.holdings != null ? t.holdings : 0)+' Holdings', subColor:'#6f8189', accent:A },
+      { label:'Unrealised P&L', value:t.unrealised || '—', sub:'Portfolio', subColor:'#4ee39a', accent:'#4ee39a' },
+      { label:'Open Flips', value:String(fl.length), sub:'Live', subColor:'#e4ae39', accent:'#e4ae39' },
+      { label:'Live Signals', value:String(t.open_signals != null ? t.open_signals : sig.length), sub:'Active', subColor:'#eb4b4b', accent:'#eb4b4b' },
+      { label:'Best Margin', value:fl.length ? '·' : '—', sub:'', subColor:'#d32ce6', accent:'#d32ce6' },
+    ];
+    return { kpis, flips:fl, signals:sig, portfolio:port, flipsCount:fl.length, signalsCount:sig.length, portfolioCount:port.length };
+  }
+
+  renderVals(){
+    const data = this.state.raw ? this.mapLive(this.state.raw.s, this.state.raw.flips) : this.demo();
+    const secs = Math.max(0, Math.round((this.state.now - this.generatedAt) / 1000));
+    const rel = secs < 60 ? secs + 'S AGO' : Math.floor(secs/60) + 'M AGO';
+    return Object.assign({}, data, {
+      sourceLabel: this.state.sourceLabel,
+      updatedRel: rel,
+      onReload: () => { this.generatedAt = Date.now(); this.setState({ now: Date.now() }); this.fetchLive(); },
+    });
+  }
+}
+</script>
+</body>
+</html>

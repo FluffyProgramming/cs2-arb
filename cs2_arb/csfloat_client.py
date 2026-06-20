@@ -41,6 +41,7 @@ def parse_listing(raw: dict) -> Listing:
         price_cents=raw["price"],
         is_stattrak=item.get("is_stattrak", False),
         is_souvenir=item.get("is_souvenir", False),
+        rarity=item.get("rarity", 0) or 0,
         type=raw.get("type", "buy_now"),
         wear_name=item.get("wear_name", ""),
         stickers=stickers,

@@ -30,6 +30,7 @@ def build_portfolio(holdings: Sequence[Holding], listings: Sequence[Listing]) ->
         rows.append({
             "label": h.label,
             "market_hash_name": h.market_hash_name,
+            "rarity": h.rarity,
             "wear": wear_tier(h.float_value),
             "float": round(h.float_value, 4),
             "quantity": h.quantity,
@@ -50,17 +51,27 @@ def build_portfolio(holdings: Sequence[Holding], listings: Sequence[Listing]) ->
 
 
 def serialise_signals(signals: Sequence[Signal]) -> list[dict]:
-    return [{
-        "kind": s.kind,
-        "severity": s.severity,
-        "holding": s.holding.label,
-        "listing_id": s.listing.id,
-        "price": _money(s.listing.price_cents),
-        "float": round(s.listing.float_value, 4),
-        "fair_value": _money(s.fair_value.median_cents),
-        "message": s.message,
-        "url": s.metadata.get("listing_url", ""),
-    } for s in signals]
+    out = []
+    for s in signals:
+        roi = s.metadata.get("roi")
+        net = s.metadata.get("net_cents")
+        out.append({
+            "kind": s.kind,
+            "severity": s.severity,
+            "holding": s.holding.label,
+            "rarity": s.listing.rarity or s.holding.rarity,
+            "listing_id": s.listing.id,
+            "price": _money(s.listing.price_cents),
+            "float": round(s.listing.float_value, 4),
+            "fair_value": _money(s.fair_value.median_cents),
+            "message": s.message,
+            "url": s.metadata.get("listing_url", ""),
+            # extra fields for rich flip cards (present on hunt signals)
+            "roi_pct": round(roi * 100, 1) if roi is not None else None,
+            "net": _money(net) if net is not None else None,
+            "n_comps": s.fair_value.n_comps,
+        })
+    return out
 
 
 def build_state(
