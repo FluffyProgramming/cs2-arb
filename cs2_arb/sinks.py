@@ -76,59 +76,112 @@ class EmailSink:
         lines.append("— alert-only; no trades were placed.")
         return "\n".join(lines)
 
+    # CSFloat rarity int -> CS2 color (matches the dashboard palette)
+    _RARITY = {1: "#b0c3d9", 2: "#5e98d9", 3: "#4b69ff", 4: "#8847ff",
+               5: "#d32ce6", 6: "#eb4b4b", 7: "#cf9b3f"}
+    _DISP = "'Saira Condensed',Arial,sans-serif"
+    _MONO = "'JetBrains Mono',Consolas,monospace"
+
+    @classmethod
+    def _rarity_color(cls, rarity: int, label: str) -> str:
+        if label and label.strip().startswith("★"):   # knives/gloves -> gold
+            return "#e4ae39"
+        return cls._RARITY.get(rarity, "#2d8fef")
+
     @staticmethod
     def _discount(s: Signal):
         fv = s.fair_value.median_cents
-        if not fv:
-            return None
-        return 1 - (s.listing.price_cents / fv)
+        return None if not fv else 1 - (s.listing.price_cents / fv)
+
+    def _chip(self, text: str, color: str) -> str:
+        return (f'<span style="font-family:{self._MONO};font-size:10px;font-weight:600;'
+                f'letter-spacing:.5px;color:{color};border:1px solid {color};padding:2px 7px">{text}</span>')
 
     def _card(self, s: Signal) -> str:
-        high = s.severity == "high"
-        accent = "#f87171" if high else "#fbbf24"
-        tag_bg = "rgba(248,113,113,.15)" if high else "rgba(251,191,36,.15)"
-        kind = s.kind.replace("_", " ").upper()
-        disc = self._discount(s)
-        disc_txt = f"{disc:.0%} under fair" if disc is not None else ""
-        fv = _money(s.fair_value.median_cents) if s.fair_value.median_cents else "—"
+        sev = "#eb4b4b" if s.severity == "high" else "#e4ae39"
+        rar = self._rarity_color(getattr(s.listing, "rarity", 0) or getattr(s.holding, "rarity", 0),
+                                 s.holding.label)
+        fair = _money(s.fair_value.median_cents) if s.fair_value.median_cents else "—"
         url = s.metadata.get("listing_url", "")
-        btn = (
-            f'<a href="{url}" style="display:inline-block;margin-top:10px;padding:8px 16px;'
-            f'background:#d8b66b;color:#0b1410;text-decoration:none;border-radius:6px;'
-            f'font-weight:600;font-size:13px">View listing &rarr;</a>'
-            if url else ""
-        )
+        kind = s.kind.replace("_", " ").upper()
+        is_flip = s.kind == "flip"
+
+        if is_flip and s.metadata.get("roi") is not None:
+            roi = s.metadata["roi"] * 100
+            net = _money(s.metadata.get("net_cents")) if s.metadata.get("net_cents") is not None else "—"
+            middle = (
+                f'<div style="margin:11px 0 9px">'
+                f'<span style="font-family:{self._DISP};font-weight:bold;font-size:26px;color:#4ee39a">+{roi:.0f}%</span>'
+                f'&nbsp;&nbsp;<span style="font-family:{self._MONO};font-size:13px;color:#bccace">'
+                f'{_money(s.listing.price_cents)} <span style="color:{rar}">&rarr;</span> '
+                f'<span style="color:#9fd6a8">{fair}</span></span></div>'
+            )
+            meta = f"FLOAT {s.listing.float_value:.4f} &middot; {s.fair_value.n_comps} COMPS &middot; NET {net}"
+        else:
+            disc = self._discount(s)
+            disc_txt = (f'<span style="color:{sev};font-size:12px"> &middot; {disc:.0%} under</span>'
+                        if disc is not None else "")
+            middle = (
+                f'<div style="margin:9px 0 7px">'
+                f'<span style="font-family:{self._DISP};font-weight:bold;font-size:22px;color:#ffffff">'
+                f'{_money(s.listing.price_cents)}</span>'
+                f'<span style="font-family:{self._MONO};font-size:12px;color:#6f8189"> vs fair {fair}</span>'
+                f'{disc_txt}</div>'
+            )
+            meta = f"FLOAT {s.listing.float_value:.4f} &middot; {s.fair_value.n_comps} COMPS"
+
+        btn = (f'<a href="{url}" style="font-family:{self._DISP};font-weight:bold;font-size:12px;'
+               f'letter-spacing:1px;color:#2d8fef;text-decoration:none">VIEW LISTING &rarr;</a>'
+               if url else "")
+
         return f"""
-        <tr><td style="padding:0 0 12px 0">
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f1d17;border-left:4px solid {accent};border-radius:0 10px 10px 0">
-            <tr><td style="padding:16px 18px">
-              <span style="font-size:10px;font-weight:700;letter-spacing:.5px;color:{accent};background:{tag_bg};padding:3px 9px;border-radius:999px">{kind}</span>
-              <div style="font-size:16px;font-weight:600;color:#e7f0ea;margin:10px 0 6px">{s.holding.label}</div>
-              <div style="font-size:22px;font-weight:700;color:#ffffff">{_money(s.listing.price_cents)}
-                <span style="font-size:13px;font-weight:400;color:#8aa499">vs fair {fv}</span></div>
-              <div style="font-size:12px;color:{accent};margin-top:4px">{disc_txt}</div>
-              <div style="font-size:12px;color:#8aa499;margin-top:6px">float {s.listing.float_value:.4f} &nbsp;&middot;&nbsp; {s.fair_value.n_comps} comps</div>
-              {btn}
+        <tr><td style="padding:0 0 11px 0">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f191e;border:1px solid #1b2a31;border-left:3px solid {rar}">
+            <tr><td style="padding:13px 16px">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td style="font-family:{self._DISP};font-weight:bold;font-size:17px;color:#eef5f7">
+                  <span style="color:{rar};font-size:13px">&#9679;</span>&nbsp; {s.holding.label}</td>
+                <td align="right" style="white-space:nowrap">{self._chip(kind, sev)}</td>
+              </tr></table>
+              {middle}
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td style="font-family:{self._MONO};font-size:11px;color:#6f8189;letter-spacing:.3px">{meta}</td>
+                <td align="right">{btn}</td>
+              </tr></table>
             </td></tr>
           </table>
         </td></tr>"""
 
     def _html(self, signals: Sequence[Signal]) -> str:
         high = sum(1 for s in signals if s.severity == "high")
-        sub = f"{len(signals)} signal{'s' if len(signals) != 1 else ''}" + (f" · {high} high" if high else "")
+        flips = sum(1 for s in signals if s.kind == "flip")
+        label = "FLIPS" if flips and flips == len(signals) else "SIGNALS"
+        status = f"{len(signals)} {label}" + (f" &middot; {high} HIGH" if high else "")
         cards = "".join(self._card(s) for s in signals)
-        return f"""<!doctype html><html><body style="margin:0;padding:0;background:#0b1410">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#0b1410;padding:24px 0">
+        stripe = ("background:#e4ae39;background-image:repeating-linear-gradient(45deg,"
+                  "#e4ae39,#e4ae39 6px,#0b1014 6px,#0b1014 12px)")
+        return f"""<!doctype html><html><body style="margin:0;padding:0;background:#070a0b">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#070a0b;padding:24px 0">
 <tr><td align="center">
-  <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;font-family:Arial,Helvetica,sans-serif">
-    <tr><td style="padding:0 18px 18px">
-      <div style="font-size:20px;color:#e7f0ea;font-weight:700">CS2 <span style="color:#d8b66b">Arb</span></div>
-      <div style="font-size:13px;color:#8aa499;margin-top:2px">{sub}</div>
+  <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+    <tr><td style="padding:0 18px 12px">
+      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td width="34" style="vertical-align:middle"><div style="width:30px;height:30px;background:#10355c;color:#fff;text-align:center;line-height:30px;font-size:16px">&#9678;</div></td>
+        <td style="padding-left:10px;vertical-align:middle">
+          <div style="font-family:{self._DISP};font-weight:bold;font-size:19px;letter-spacing:2px;color:#e6eef0">CS2 <span style="color:#2d8fef">ARBITRAGE</span> TERMINAL</div>
+          <div style="font-family:{self._MONO};font-size:11px;letter-spacing:.5px;color:#6f8189;margin-top:3px">{status}</div>
+        </td>
+      </tr></table>
     </td></tr>
-    {cards}
-    <tr><td style="padding:14px 18px 0">
-      <div style="font-size:11px;color:#5f6f68;border-top:1px solid #1f3a2d;padding-top:12px">
-        Alert-only — no trades were placed. Float-band comparables from CSFloat.</div>
+    <tr><td style="padding:0 18px"><div style="height:3px;{stripe}"></div></td></tr>
+    <tr><td style="padding:16px 18px 0">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        {cards}
+      </table>
+    </td></tr>
+    <tr><td style="padding:6px 18px 0">
+      <div style="font-family:{self._MONO};font-size:11px;color:#52646b;border-top:1px solid #1b2a31;padding-top:12px">
+        ALERT-ONLY &middot; NO TRADES PLACED &middot; FLOAT-BAND COMPARABLES FROM CSFLOAT</div>
     </td></tr>
   </table>
 </td></tr></table></body></html>"""
