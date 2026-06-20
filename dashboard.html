@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CS2 Arb — Portfolio & Signals</title>
+<style>
+  :root {
+    --bg: #0b1410; --panel: #0f1d17; --panel2: #13241c; --line: #1f3a2d;
+    --text: #e7f0ea; --muted: #8aa499; --gold: #d8b66b; --green: #4ade80;
+    --red: #f87171; --amber: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(120% 120% at 50% 0%, #102019 0%, var(--bg) 60%);
+         color: var(--text); font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 64px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: .3px; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--muted); font-size: 12px; }
+  button { background: var(--panel2); color: var(--text); border: 1px solid var(--line);
+           border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 13px; }
+  button:hover { border-color: var(--gold); }
+  .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0 8px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .card .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .6px; }
+  .card .v { font-size: 22px; font-weight: 600; margin-top: 4px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted);
+       margin: 28px 0 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  .sig { border-left: 4px solid var(--amber); background: var(--panel); border-radius: 8px;
+         padding: 12px 14px; margin-bottom: 10px; }
+  .sig.high { border-left-color: var(--red); }
+  .sig .tag { font-size: 10px; font-weight: 700; letter-spacing: .5px; padding: 2px 7px; border-radius: 999px;
+              background: rgba(251,191,36,.15); color: var(--amber); }
+  .sig.high .tag { background: rgba(248,113,113,.15); color: var(--red); }
+  .sig a { color: var(--gold); text-decoration: none; font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: right; padding: 10px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; white-space: normal; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+  tbody tr:hover { background: var(--panel2); }
+  .pos { color: var(--green); } .neg { color: var(--red); }
+  .muted { color: var(--muted); }
+  .err { background: var(--panel); border: 1px solid var(--red); border-radius: 10px; padding: 16px; color: var(--red); }
+  .err code { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>CS2 <span>Arb</span> — Portfolio &amp; Signals</h1>
+      <div class="sub" id="generated">loading…</div>
+    </div>
+    <button onclick="load()">Reload</button>
+  </header>
+
+  <div id="content"></div>
+</div>
+
+<script>
+const fmtPct = v => v == null ? "—" : Math.round(v * 100) + "%";
+
+function totalsHtml(t) {
+  const cell = (k, v) => `<div class="card"><div class="k">${k}</div><div class="v">${v ?? "—"}</div></div>`;
+  return `<div class="totals">
+    ${cell("Holdings", t.holdings)}
+    ${cell("Fair value", t.fair_value)}
+    ${cell("Unrealised", t.unrealised)}
+    ${cell("Open signals", t.open_signals)}
+  </div>`;
+}
+
+function signalsHtml(sigs) {
+  if (!sigs.length) return `<h2>Signals</h2><div class="muted">No active signals.</div>`;
+  return `<h2>Signals (${sigs.length})</h2>` + sigs.map(s => `
+    <div class="sig ${s.severity}">
+      <span class="tag">${s.kind.replace("_", " ")}</span>
+      <div style="margin-top:6px">${s.message}</div>
+      ${s.url ? `<a href="${s.url}" target="_blank">view listing →</a>` : ""}
+    </div>`).join("");
+}
+
+function portfolioHtml(rows) {
+  if (!rows.length) return "";
+  const body = rows.map(r => {
+    const u = r.unrealised_cents;
+    const ucls = u == null ? "muted" : (u >= 0 ? "pos" : "neg");
+    return `<tr>
+      <td>${r.label}<div class="muted" style="font-size:11px">${r.wear} · float ${r.float}${r.quantity>1?` · x${r.quantity}`:""}</div></td>
+      <td>${r.fair_value ?? "—"}</td>
+      <td class="muted">${r.p25 ?? "—"}</td>
+      <td class="muted">${r.n_comps} <span style="font-size:10px">±${r.band_width}</span></td>
+      <td>${fmtPct(r.float_rank_pct)}</td>
+      <td class="muted">${r.cost_basis ?? "—"}</td>
+      <td class="muted">${r.reserve ?? "—"}</td>
+      <td class="${ucls}">${r.unrealised ?? "—"}</td>
+      <td>${r.cheapest_url ? `<a style="color:var(--gold)" href="${r.cheapest_url}" target="_blank">${r.cheapest_listing}</a>` : (r.cheapest_listing ?? "—")}</td>
+    </tr>`;
+  }).join("");
+  return `<h2>Portfolio</h2><table>
+    <thead><tr>
+      <th>Item</th><th>Fair value</th><th>p25</th><th>Comps</th><th>Float rank</th>
+      <th>Cost basis</th><th>Reserve</th><th>Unrealised</th><th>Cheapest live</th>
+    </tr></thead><tbody>${body}</tbody></table>
+    <div class="sub" style="margin-top:8px">Float rank: % of comparable listings with a lower float — lower is rarer.</div>`;
+}
+
+async function load() {
+  const content = document.getElementById("content");
+  try {
+    const res = await fetch("state.json?t=" + Date.now());
+    if (!res.ok) throw new Error(res.status);
+    const s = await res.json();
+    document.getElementById("generated").textContent =
+      "updated " + new Date(s.generated_at).toLocaleString();
+    content.innerHTML = totalsHtml(s.totals) + signalsHtml(s.signals) + portfolioHtml(s.portfolio);
+  } catch (e) {
+    document.getElementById("generated").textContent = "";
+    content.innerHTML = `<div class="err">Couldn't load <code>state.json</code> (${e.message}).<br><br>
+      Run a cycle first: <code>python -m scripts.run_once</code><br>
+      Then serve this folder (browsers block file:// fetches):<br>
+      <code>python -m http.server 8000</code> → open <code>http://localhost:8000/dashboard.html</code></div>`;
+  }
+}
+
+load();
+setInterval(load, 60000); // auto-refresh each minute
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+# Runtime: standard library only (urllib, smtplib, json) — no install needed.
+# Dev/test only:
+pytest>=8.0

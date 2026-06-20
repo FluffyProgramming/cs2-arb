@@ -1,0 +1,122 @@
+# CS2 Float-Aware Arbitrage Agent
+
+A self-hosted agent that watches the [CSFloat](https://csfloat.com) market for the
+CS2 skins **you actually own** and emails you when something is worth acting on —
+a listing under your reserve, or one priced below its float-aware fair value.
+
+Unlike a flat price tracker, fair value here is **float-aware**: it compares each
+item only against listings of the same skin, wear tier, and a tight float band, so
+a low-float piece isn't measured against worn ones. It's **alert-only** — it never
+buys, sells, or lists anything.
+
+```
+CSFloat inventory (your floats)  ─┐
+                                  ├─►  float-band comparables  ─►  signals  ─►  email + dashboard
+CSFloat market listings  ────────┘         (fair value)          (dedup/cooldown)
+```
+
+## Features
+
+- **Zero manual data entry.** Pulls your inventory *with real float values* straight
+  from CSFloat's authenticated API — no inspect links, no Steam scraping.
+- **Float-band comparable engine.** Median / p25 fair value from same-skin,
+  same-wear, similar-float listings, with an adaptive band that widens until it has
+  enough comps.
+- **Two alert types.** Reserve breach (a listing at/under your price) and undervalued
+  (a listing a configurable % under fair value).
+- **No inbox flood.** A persisted per-listing cooldown means each deal alerts at most
+  once per window; quiet cycles send nothing.
+- **Nice emails.** Styled HTML digest with a plain-text fallback.
+- **Local dashboard.** Self-contained `dashboard.html` shows portfolio fair value,
+  P&L, and open signals.
+- **Runs anywhere.** A Raspberry Pi / VPS via cron, or free via GitHub Actions.
+- **Stdlib-only runtime.** No third-party packages to run; `pytest` only for tests.
+
+## Quick start
+
+```bash
+git clone <this-repo> && cd cs2-arb
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # Python 3.10+
+cp .env.example .env        # fill in your CSFloat key + SMTP creds
+
+python -m scripts.build_holdings          # build watchlist from your inventory
+python -m scripts.selftest --send-email   # verify key, inventory, and email
+python -m scripts.run_once --live --send-email   # one real cycle
+```
+
+View the dashboard (browsers block `file://` fetches, so serve it):
+
+```bash
+python -m http.server 8000   # open http://localhost:8000/dashboard.html
+```
+
+## Configuration
+
+Secrets and behaviour live in `.env` (gitignored — see `.env.example`):
+
+| Key | Purpose |
+|-----|---------|
+| `CSFLOAT_API_KEY` | From csfloat.com → profile → developer tab |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | Email sending (Gmail app password or Outlook) |
+| `MAIL_FROM` / `MAIL_TO` | Alert sender / recipient |
+| `DIVERGENCE_PCT` | How far under fair value an "undervalued" alert needs (default `0.10`) |
+| `COOLDOWN_SECONDS` | Re-alert window per listing (default `21600` = 6h) |
+
+The value floor that decides which items are worth watching is `MIN_MEDIAN_CENTS`
+in `scripts/build_holdings.py` (default `$10`). Your per-item `cost_basis` (for P&L)
+is preserved across watchlist rebuilds.
+
+## Scheduling
+
+Run every 30 minutes; the persisted cooldown keeps it quiet. See
+[`SCHEDULING.md`](SCHEDULING.md) for Raspberry Pi / VPS cron and the included
+GitHub Actions workflow (`.github/workflows/cs2-arb.yml`).
+
+## How fair value is computed
+
+For a holding, comparables are listings that match `def_index` + `paint_index` +
+category (normal/StatTrak/Souvenir) + wear tier, and fall within `±band` of the
+holding's float. The band starts tight and doubles (capped) until it has at least
+`min_comps`. Fair value is the median of those comps; p25 is the aggressive "good
+deal" line. A `float_rank` (share of comps with a lower float) shows how rare your
+float is. Prices are integer cents throughout, matching the CSFloat API.
+
+## Project layout
+
+```
+cs2_arb/
+  models.py          typed domain models
+  wear.py            wear tiers + float ranking
+  comparables.py     float-band comparable engine (core logic)
+  signals.py         reserve / undervalued signals, persisted dedup + cooldown
+  csfloat_client.py  CSFloat API client (listings, inventory, backoff)
+  steam_inventory.py optional Steam inventory fallback
+  config.py          .env / env-var settings
+  sinks.py           console / HTML email / json-state outputs
+  state.py           builds state.json for the dashboard
+scripts/             build_holdings · run_once · selftest
+demo/                fixtures + offline demo
+tests/               pytest suite
+dashboard.html       read-only dashboard
+```
+
+```bash
+pytest -q   # run the suite
+```
+
+## Safety
+
+Alert-only by design. The agent reads market data and sends email; it performs no
+trades, listings, or purchases. Credentials stay in `.env` and are never committed;
+your inventory and listing data are gitignored too.
+
+## Roadmap
+
+- Sticker-craft premium signal (craft value vs. base skin)
+- Trade-up contract EV as input prices move
+- Weekly portfolio summary email
+
+## Disclaimer
+
+Not affiliated with CSFloat or Valve. Market data can be wrong or stale; verify
+before trading. Provided as-is.

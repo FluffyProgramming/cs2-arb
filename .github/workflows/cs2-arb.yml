@@ -1,0 +1,50 @@
+name: cs2-arb
+
+# Free + always-on alternative to the Pi. Free/unlimited minutes on PUBLIC repos.
+# On a PRIVATE repo this counts against the monthly free minutes — use hourly
+# (cron: "0 * * * *") there to stay well within the free tier.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 minutes (UTC)
+  workflow_dispatch: {}        # manual "Run workflow" button
+
+concurrency:
+  group: cs2-arb               # never overlap runs
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Persist the cooldown file between runs (runners are ephemeral).
+      - name: Restore alert state
+        uses: actions/cache@v4
+        with:
+          path: alert_state.json
+          key: cs2-arb-alert-state-${{ github.run_id }}
+          restore-keys: cs2-arb-alert-state-
+
+      - name: Write .env from secrets
+        run: |
+          cat > .env <<EOF
+          CSFLOAT_API_KEY=${{ secrets.CSFLOAT_API_KEY }}
+          STEAM_ID64=${{ secrets.STEAM_ID64 }}
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+          MAIL_FROM=${{ secrets.MAIL_FROM }}
+          MAIL_TO=${{ secrets.MAIL_TO }}
+          DIVERGENCE_PCT=0.10
+          COOLDOWN_SECONDS=21600
+          EOF
+
+      - name: Run one cycle
+        run: python -m scripts.run_once --live --send-email

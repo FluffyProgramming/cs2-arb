@@ -1,0 +1,24 @@
+[
+  {
+    "label": "AK-47 | Bloodsport FT (TyLoo craft #1)",
+    "market_hash_name": "AK-47 | Bloodsport (Field-Tested)",
+    "def_index": 7,
+    "paint_index": 282,
+    "float_value": 0.2215,
+    "is_stattrak": false,
+    "quantity": 1,
+    "cost_basis_cents": 2900,
+    "reserve_cents": 2600
+  },
+  {
+    "label": "Karambit | Doppler FT",
+    "market_hash_name": "Karambit | Doppler (Field-Tested)",
+    "def_index": 507,
+    "paint_index": 417,
+    "float_value": 0.1805,
+    "is_stattrak": false,
+    "quantity": 1,
+    "cost_basis_cents": 64000,
+    "reserve_cents": 66000
+  }
+]

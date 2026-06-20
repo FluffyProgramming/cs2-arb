@@ -1,0 +1,22 @@
+# secrets — never commit
+.env
+*.env
+!.env.example
+
+# local state
+state.json
+alert_state.json
+*.cache
+cron.log
+
+# personal data — keep out of the repo (commit holdings.example.json instead)
+holdings.json
+email_preview.html
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
