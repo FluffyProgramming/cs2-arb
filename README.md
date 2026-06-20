@@ -28,6 +28,9 @@ CSFloat market listings  ────────┘         (fair value)       
   enough comps.
 - **Two alert types.** Reserve breach (a listing at/under your price) and undervalued
   (a listing a configurable % under fair value).
+- **Flip hunting.** Scans the market for skins you *don't* own that are underpriced
+  enough to buy-and-reflip — confirmed against float-band fair value, after fees,
+  base-skins only, liquid only. See [Hunt mode](#hunt-mode-flips).
 - **No inbox flood.** A persisted per-listing cooldown means each deal alerts at most
   once per window; quiet cycles send nothing.
 - **Nice emails.** Styled HTML digest with a plain-text fallback.
@@ -53,6 +56,22 @@ View the dashboard (browsers block `file://` fetches, so serve it):
 ```bash
 python -m http.server 8000   # open http://localhost:8000/dashboard.html
 ```
+
+## Hunt mode (flips)
+
+Find flip candidates on skins you don't own:
+
+```bash
+cp hunt_targets.example.json hunt_targets.json   # optional curated watch list
+python -m scripts.run_hunt --send-email          # scan + email flip opportunities
+```
+
+It pulls cheap listings in your price band ($20–$200 by default), then for each
+confirms a **positive ROI after the seller fee** against the float-band median —
+skipping Souvenirs, sticker-heavy listings, and illiquid skins (their comps can't be
+trusted). Flips appear at the top of the dashboard and in their own email. Tune via
+the `HUNT_*` keys in `.env`. Schedule it alongside the portfolio poll (see
+[`SCHEDULING.md`](SCHEDULING.md)).
 
 ## Configuration
 
@@ -93,12 +112,13 @@ cs2_arb/
   wear.py            wear tiers + float ranking
   comparables.py     float-band comparable engine (core logic)
   signals.py         reserve / undervalued signals, persisted dedup + cooldown
-  csfloat_client.py  CSFloat API client (listings, inventory, backoff)
+  csfloat_client.py  CSFloat API client (listings, inventory, trades, backoff)
+  hunt.py            flip finder over skins you don't own (market scan)
   steam_inventory.py optional Steam inventory fallback
   config.py          .env / env-var settings
   sinks.py           console / HTML email / json-state outputs
   state.py           builds state.json for the dashboard
-scripts/             build_holdings · run_once · selftest
+scripts/             build_holdings · run_once · run_hunt · selftest
 demo/                fixtures + offline demo
 tests/               pytest suite
 dashboard.html       read-only dashboard

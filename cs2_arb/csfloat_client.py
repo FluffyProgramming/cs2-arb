@@ -22,6 +22,7 @@ BASE_URL = "https://csfloat.com/api/v1"
 def parse_listing(raw: dict) -> Listing:
     """Map a raw CSFloat listing dict to our Listing model."""
     item = raw["item"]
+    scm = item.get("scm") or {}
     stickers = tuple(
         Sticker(
             name=s.get("name", ""),
@@ -44,6 +45,8 @@ def parse_listing(raw: dict) -> Listing:
         wear_name=item.get("wear_name", ""),
         stickers=stickers,
         url=f"https://csfloat.com/item/{raw['id']}",
+        scm_price_cents=scm.get("price", 0) or 0,
+        scm_volume=scm.get("volume", 0) or 0,
     )
 
 
@@ -134,12 +137,14 @@ class CSFloatClient:
         paint_seed: Optional[int] = None,
         min_float: Optional[float] = None,
         max_float: Optional[float] = None,
+        min_price: Optional[int] = None,
+        max_price: Optional[int] = None,
         category: Optional[int] = None,
         sort_by: str = "lowest_price",
         listing_type: Optional[str] = "buy_now",
         max_pages: int = 10,
     ) -> Iterator[Listing]:
-        """Yield parsed listings, following cursor pagination (50/page)."""
+        """Yield parsed listings, following cursor pagination (50/page). Prices in cents."""
         cursor = None
         for _ in range(max_pages):
             params = {
@@ -149,6 +154,8 @@ class CSFloatClient:
                 "paint_seed": paint_seed,
                 "min_float": min_float,
                 "max_float": max_float,
+                "min_price": min_price,
+                "max_price": max_price,
                 "category": category,
                 "sort_by": sort_by,
                 "type": listing_type,

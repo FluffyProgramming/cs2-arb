@@ -71,6 +71,17 @@ function totalsHtml(t) {
   </div>`;
 }
 
+function flipsHtml(flips) {
+  if (!flips || !flips.length) return "";
+  const cards = flips.map(s => `
+    <div class="sig ${s.severity}">
+      <span class="tag">FLIP</span>
+      <div style="margin-top:6px">${s.message}</div>
+      ${s.url ? `<a href="${s.url}" target="_blank">view listing →</a>` : ""}
+    </div>`).join("");
+  return `<h2>Flip opportunities (${flips.length})</h2>${cards}`;
+}
+
 function signalsHtml(sigs) {
   if (!sigs.length) return `<h2>Signals</h2><div class="muted">No active signals.</div>`;
   return `<h2>Signals (${sigs.length})</h2>` + sigs.map(s => `
@@ -114,7 +125,14 @@ async function load() {
     const s = await res.json();
     document.getElementById("generated").textContent =
       "updated " + new Date(s.generated_at).toLocaleString();
-    content.innerHTML = totalsHtml(s.totals) + signalsHtml(s.signals) + portfolioHtml(s.portfolio);
+    // hunt_state.json is optional — render flips above your portfolio if present
+    let flips = [];
+    try {
+      const hr = await fetch("hunt_state.json?t=" + Date.now());
+      if (hr.ok) flips = (await hr.json()).flips || [];
+    } catch (e) {}
+    content.innerHTML = totalsHtml(s.totals) + flipsHtml(flips)
+      + signalsHtml(s.signals) + portfolioHtml(s.portfolio);
   } catch (e) {
     document.getElementById("generated").textContent = "";
     content.innerHTML = `<div class="err">Couldn't load <code>state.json</code> (${e.message}).<br><br>

@@ -19,8 +19,10 @@ chmod +x run.sh
 Add to `crontab -e` (adjust the path to where you cloned it):
 
 ```cron
-# poll every 30 min, email new signals
+# poll YOUR holdings every 30 min, email new signals
 */30 * * * * /home/pi/cs2_arb_demo/run.sh >> /home/pi/cs2_arb_demo/cron.log 2>&1
+# hunt for flips on skins you don't own, every 30 min (offset by 15)
+15,45 * * * * cd /home/pi/cs2_arb_demo && .venv/bin/python -m scripts.run_hunt --send-email >> cron.log 2>&1
 # refresh watchlist from your inventory weekly (keeps your cost_basis)
 0 4 * * 1 cd /home/pi/cs2_arb_demo && .venv/bin/python -m scripts.build_holdings >> cron.log 2>&1
 ```

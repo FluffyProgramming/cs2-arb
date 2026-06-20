@@ -6,11 +6,14 @@
 # local state
 state.json
 alert_state.json
+hunt_state.json
+hunt_alert_state.json
 *.cache
 cron.log
 
-# personal data — keep out of the repo (commit holdings.example.json instead)
+# personal data — keep out of the repo (commit *.example.json instead)
 holdings.json
+hunt_targets.json
 email_preview.html
 
 # python

@@ -53,6 +53,13 @@ class Settings:
     poll_seconds: int
     divergence_pct: float
     cooldown_seconds: int
+    # hunt (flip finder)
+    hunt_min_price_cents: int
+    hunt_max_price_cents: int
+    hunt_min_margin: float
+    hunt_sell_fee: float
+    hunt_min_liquidity: int
+    hunt_max_candidates: int
 
     @property
     def email_configured(self) -> bool:
@@ -74,4 +81,10 @@ def load_settings(env_path: str = ".env") -> Settings:
         poll_seconds=_int("POLL_SECONDS", 900),
         divergence_pct=_float("DIVERGENCE_PCT", 0.10),
         cooldown_seconds=_int("COOLDOWN_SECONDS", 21600),
+        hunt_min_price_cents=_int("HUNT_MIN_PRICE_CENTS", 2000),
+        hunt_max_price_cents=_int("HUNT_MAX_PRICE_CENTS", 20000),
+        hunt_min_margin=_float("HUNT_MIN_MARGIN", 0.15),
+        hunt_sell_fee=_float("HUNT_SELL_FEE", 0.02),
+        hunt_min_liquidity=_int("HUNT_MIN_LIQUIDITY", 8),
+        hunt_max_candidates=_int("HUNT_MAX_CANDIDATES", 40),
     )

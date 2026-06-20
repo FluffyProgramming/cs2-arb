@@ -37,6 +37,8 @@ class Listing:
     wear_name: str = ""
     stickers: tuple[Sticker, ...] = ()
     url: str = ""
+    scm_price_cents: int = 0         # Steam Community Market price (reference)
+    scm_volume: int = 0              # Steam sales volume (liquidity hint)
 
     @property
     def category(self) -> int:
