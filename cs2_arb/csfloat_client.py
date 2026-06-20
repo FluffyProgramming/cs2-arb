@@ -102,6 +102,29 @@ class CSFloatClient:
         payload = self._get("/me/inventory", {})
         return payload if isinstance(payload, list) else payload.get("data", [])
 
+    def cost_basis_by_name(self) -> dict[str, int]:
+        """Map market_hash_name -> price paid (cents) for items you BOUGHT on CSFloat.
+
+        Reads /me/trades and keeps trades where you are the buyer. Matched by name
+        because Steam reassigns asset IDs on delivery, so the trade's asset_id no
+        longer matches your current inventory. For duplicate skins, the most recent
+        purchase wins.
+        """
+        me = self._get("/me", {})
+        my_id = (me.get("user") or {}).get("steam_id")
+        trades = self._get("/me/trades", {})
+        rows = trades.get("trades", []) if isinstance(trades, dict) else (trades or [])
+        out: dict[str, int] = {}
+        for t in rows:
+            if t.get("buyer_id") != my_id:
+                continue
+            contract = t.get("contract") or {}
+            item = contract.get("item") or {}
+            name, price = item.get("market_hash_name"), contract.get("price")
+            if name and price is not None:
+                out[name] = price
+        return out
+
     def iter_listings(
         self,
         *,

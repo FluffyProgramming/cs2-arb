@@ -9,6 +9,9 @@ item only against listings of the same skin, wear tier, and a tight float band, 
 a low-float piece isn't measured against worn ones. It's **alert-only** — it never
 buys, sells, or lists anything.
 
+New to the signals? See the **[Playbook](PLAYBOOK.md)** for how to read each alert
+and what to do with it.
+
 ```
 CSFloat inventory (your floats)  ─┐
                                   ├─►  float-band comparables  ─►  signals  ─►  email + dashboard
@@ -18,7 +21,8 @@ CSFloat market listings  ────────┘         (fair value)       
 ## Features
 
 - **Zero manual data entry.** Pulls your inventory *with real float values* straight
-  from CSFloat's authenticated API — no inspect links, no Steam scraping.
+  from CSFloat's authenticated API — no inspect links, no Steam scraping. Cost basis
+  is auto-filled from your CSFloat purchase history for true P&L.
 - **Float-band comparable engine.** Median / p25 fair value from same-skin,
   same-wear, similar-float listings, with an adaptive band that widens until it has
   enough comps.

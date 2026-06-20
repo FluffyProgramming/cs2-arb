@@ -50,7 +50,9 @@ def main() -> None:
     # weapons/knives only (cases, stickers, kits have float_value 0/None)
     weapons = [i for i in inv if (i.get("float_value") or 0) > 0]
     prior_cost = _existing_cost_basis()
-    print(f"inventory: {len(inv)} items, {len(weapons)} with a float\n")
+    purchased = client.cost_basis_by_name()  # real cost basis from CSFloat buys
+    print(f"inventory: {len(inv)} items, {len(weapons)} with a float; "
+          f"{len(purchased)} CSFloat purchases found\n")
 
     median_cache: dict = {}
     out = []
@@ -75,13 +77,17 @@ def main() -> None:
             "paint_seed": it.get("paint_seed"),
             "is_stattrak": bool(it.get("is_stattrak")),
             "is_souvenir": bool(it.get("is_souvenir")),
+            # cost basis: CSFloat purchase price if we bought it there, else any
+            # value you entered manually before (preserved across rebuilds)
             "float_value": round(it["float_value"], 6),
             "quantity": 1,
-            "cost_basis_cents": prior_cost.get(mhn),  # preserved across rebuilds
+            "cost_basis_cents": purchased.get(mhn, prior_cost.get(mhn)),
             "reserve_cents": reserve,
         })
-        print(f"  + {mhn[:52]:52} float {it['float_value']:.4f}  "
-              f"median ${median/100:>8,.2f}  reserve ${reserve/100:>8,.2f}")
+        cb = purchased.get(mhn, prior_cost.get(mhn))
+        cb_txt = f"cost ${cb/100:,.2f}" + (" (CSFloat)" if mhn in purchased else "") if cb else "cost —"
+        print(f"  + {mhn[:46]:46} float {it['float_value']:.4f}  "
+              f"median ${median/100:>8,.2f}  reserve ${reserve/100:>8,.2f}  {cb_txt}")
 
     with open("holdings.json", "w") as f:
         json.dump(out, f, indent=2, ensure_ascii=False)
