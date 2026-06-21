@@ -56,6 +56,9 @@ def evaluate_candidate(cand: Listing, comps: list[Listing], cfg: HuntConfig) -> 
     """Return a FLIP Signal if the candidate clears every gate, else None."""
     if cand.type != "buy_now":
         return None
+    # floatless items (agents, cases, kits, stickers) can't be float-band priced
+    if (cand.float_value or 0) <= 0 or not cand.paint_index:
+        return None
     # 0) Souvenirs carry a tournament premium our float-band comps can't price,
     #    and they flood the discount feed — exclude them like sticker crafts.
     if cand.is_souvenir:

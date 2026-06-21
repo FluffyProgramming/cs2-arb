@@ -1,10 +1,10 @@
 # Scheduling the agent (24/7)
 
 Run every 30 min. The persisted cooldown (`alert_state.json`, 6h) means a given
-listing emails at most once per window, and empty cycles email nothing — so a
+listing emails at most once per window, and empty cycles email nothing, so a
 30-min cadence will not flood your inbox.
 
-## Option A — Raspberry Pi / VPS (recommended: you own it, state on disk)
+## Option A: Raspberry Pi / VPS (recommended: you own it, state on disk)
 
 One-time setup on the Pi:
 
@@ -30,7 +30,7 @@ Add to `crontab -e` (adjust the path to where you cloned it):
 The Pi must be powered on; cron does not wake a sleeping machine. A Pi left
 running handles this perfectly. Check `cron.log` to confirm it's firing.
 
-## Option B — GitHub Actions (free, no hardware)
+## Option B: GitHub Actions (free, no hardware)
 
 `.github/workflows/cs2-arb.yml` is already included. Steps:
 
@@ -42,12 +42,12 @@ running handles this perfectly. Check `cron.log` to confirm it's firing.
 3. The workflow runs every 30 min and restores `alert_state.json` from cache
    between runs. Use the Actions tab → "Run workflow" to test immediately.
 
-Note: GitHub may pause scheduled workflows on repos with no recent commits —
+Note: GitHub may pause scheduled workflows on repos with no recent commits:
 push occasionally or it'll go dormant.
 
 ## Tuning (in .env unless noted)
 
-- `COOLDOWN_SECONDS` — re-alert window per listing (default 21600 = 6h).
-- `DIVERGENCE_PCT` — how far under fair value an "undervalued" alert needs (0.10).
-- `MIN_MEDIAN_CENTS` (in `scripts/build_holdings.py`) — value floor; currently
+- `COOLDOWN_SECONDS`: re-alert window per listing (default 21600 = 6h).
+- `DIVERGENCE_PCT`: how far under fair value an "undervalued" alert needs (0.10).
+- `MIN_MEDIAN_CENTS` (in `scripts/build_holdings.py`): value floor; currently
   $10 to cut low-value noise.

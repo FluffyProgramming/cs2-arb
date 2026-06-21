@@ -204,7 +204,33 @@ function row(p){
   </tr>`;
 }
 
-function render(state, flips){
+function paperHtml(pp){
+  if(!pp) return "";
+  const ret=pp.total_return_pct;
+  const rc=ret==null?"var(--muted)":(ret>=0?"var(--green)":"var(--red)");
+  const k=(lab,val,vc)=>`<div class="kpi chamfer" style="--accent:var(--magenta)"><div class="lab">${lab}</div><div class="val" style="${vc?'color:'+vc:''}">${esc(val)}</div></div>`;
+  const rows=(pp.positions||[]).map(p=>{
+    const uc=p.unrealised_cents, ucol=uc==null?"var(--muted)":(uc>=0?"var(--green)":"var(--red)");
+    return `<tr><td><div class="it"><span class="rdot" style="color:${rarityColor(p.rarity,p.label)}"></span>
+      <div><div class="nm">${esc(p.label)}</div><div class="sb">float ${p.float}</div></div></div></td>
+      <td style="color:var(--muted2)">${esc(p.buy)}</td><td>${esc(p.fair)}</td>
+      <td style="color:${ucol};font-weight:600">${esc(p.unrealised)}</td>
+      <td style="color:var(--muted2)">${p.days_left>0?p.days_left+"d held":'<span style="color:var(--green)">sellable</span>'}</td></tr>`;
+  }).join("");
+  return `<div style="margin-top:24px">
+    <div class="sec-h"><span class="tick" style="--tk:var(--magenta);background:var(--magenta)"></span>
+      <h2>Paper Trading</h2><span class="cnt">[$1k sim]</span><span class="rule"></span></div>
+    <div class="kpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:14px">
+      ${k("Equity",pp.equity||"—")}${k("Total Return",(ret==null?"—":(ret>=0?"+":"")+ret+"%"),rc)}
+      ${k("Realized P&L",pp.realized_pl||"—")}${k("Cash",pp.cash||"—")}${k("Open",String(pp.open_count??0))}</div>
+    <div class="panel chamfer"><table><thead><tr>
+      <th>Position</th><th>Buy</th><th>Fair now</th><th>Unrealised</th><th>Hold</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="5" class="empty">No paper positions yet — run run_paper.</td></tr>'}</tbody></table></div>
+    <div class="cap">Forward paper test · buy on signal, hold 7 days, sell at fair value. Fills are optimistic; watch signal accuracy.</div>
+  </div>`;
+}
+
+function render(state, flips, paper){
   const t=state.totals||{}, port=state.portfolio||[], sigs=state.signals||[];
   const highFlips=flips.filter(f=>f.severity==="high").length;
   const bestRoi=flips.reduce((m,f)=>Math.max(m,f.roi_pct||0),0);
@@ -241,7 +267,8 @@ function render(state, flips){
       </tbody></table>
     </div>
     <div class="cap">Float rank — % of comparable listings with a lower float. Lower is rarer.</div>
-  </div>`;
+  </div>
+  ${paperHtml(paper)}`;
 }
 
 const DEMO={state:{generated_at:new Date().toISOString(),
@@ -251,7 +278,11 @@ const DEMO={state:{generated_at:new Date().toISOString(),
     {label:"AWP | Chrome Cannon",rarity:6,wear:"Minimal Wear",float:0.1211,quantity:1,fair_value:"$41.99",p25:"$40.48",n_comps:19,band_width:0.005,float_rank_pct:0.52,cost_basis:"$38.70",reserve:"$35.13",unrealised:"+$3.29",unrealised_cents:329,cheapest_listing:"$38.17",cheapest_url:"#"},
     {label:"★ Skeleton Knife | Damascus Steel",rarity:6,wear:"Field-Tested",float:0.2110,quantity:1,fair_value:"$212.77",p25:"$199.79",n_comps:10,band_width:0.005,float_rank_pct:0.50,cost_basis:"$207.02",reserve:"$189.00",unrealised:"+$5.75",unrealised_cents:575,cheapest_listing:"$194.11",cheapest_url:"#"},
     {label:"AK-47 | Bloodsport",rarity:6,wear:"Field-Tested",float:0.1839,quantity:1,fair_value:"$140.00",p25:"$136.33",n_comps:33,band_width:0.005,float_rank_pct:0.57,cost_basis:"$144.01",reserve:"$121.51",unrealised:"-$4.01",unrealised_cents:-401,cheapest_listing:"$132.89",cheapest_url:"#"}]},
-  flips:[{holding:"AWP | Asiimov (Field-Tested)",rarity:6,severity:"high",roi_pct:22.0,price:"$58.00",fair_value:"$72.50",float:0.22,n_comps:24,net:"+$13.05",url:"#"}]};
+  flips:[{holding:"AWP | Asiimov (Field-Tested)",rarity:6,severity:"high",roi_pct:22.0,price:"$58.00",fair_value:"$72.50",float:0.22,n_comps:24,net:"+$13.05",url:"#"}],
+  paper:{equity:"$1,024.80",total_return_pct:2.48,realized_pl:"$0.00",cash:"$742.00",open_count:2,
+    positions:[
+      {label:"AWP | Asiimov (Field-Tested)",rarity:6,float:0.22,buy:"$58.00",fair:"$72.50",unrealised:"+$13.05",unrealised_cents:1305,days_left:4.2},
+      {label:"AK-47 | Redline (Field-Tested)",rarity:4,float:0.24,buy:"$200.00",fair:"$214.00",unrealised:"+$9.72",unrealised_cents:972,days_left:0}]}};
 
 async function load(reset){
   if(reset) generatedAt=Date.now();
@@ -261,11 +292,13 @@ async function load(reset){
     const state=await r.json();
     let flips=[];
     try{const h=await fetch("hunt_state.json?t="+Date.now()); if(h.ok) flips=(await h.json()).flips||[];}catch(e){}
+    let paper=null;
+    try{const pr=await fetch("paper_state.json?t="+Date.now()); if(pr.ok) paper=await pr.json();}catch(e){}
     source="CSFLOAT"; generatedAt=state.generated_at?Date.parse(state.generated_at):Date.now();
-    render(state,flips);
+    render(state,flips,paper);
   }catch(e){
     source="DEMO"; if(reset||!generatedAt) generatedAt=Date.now();
-    render(DEMO.state,DEMO.flips);
+    render(DEMO.state,DEMO.flips,DEMO.paper);
   }
 }
 function tick(){

@@ -8,6 +8,8 @@ state.json
 alert_state.json
 hunt_state.json
 hunt_alert_state.json
+paper_state.json
+paper_trades.json
 *.cache
 cron.log
 

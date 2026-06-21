@@ -33,11 +33,11 @@ def parse_listing(raw: dict) -> Listing:
     )
     return Listing(
         id=str(raw["id"]),
-        market_hash_name=item["market_hash_name"],
-        def_index=item["def_index"],
-        paint_index=item["paint_index"],
+        market_hash_name=item.get("market_hash_name", ""),
+        def_index=item.get("def_index", 0),
+        paint_index=item.get("paint_index", 0),     # absent on agents/cases/kits
         paint_seed=item.get("paint_seed", 0),
-        float_value=item["float_value"],
+        float_value=item.get("float_value", 0.0) or 0.0,
         price_cents=raw["price"],
         is_stattrak=item.get("is_stattrak", False),
         is_souvenir=item.get("is_souvenir", False),
